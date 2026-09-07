@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Soochak | Hardware Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- AeroLinkTree Overlays -->
+  <div class="grain"></div>
+  <div class="texture-bg"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div>
+        <div class="brand-badge">
+          <span class="pulse-dot"></span>
+          <span>SIH 2026 • REALTIME ESP32</span>
+        </div>
+        <h1>PROJECT SOOCHAK <span class="sub-tag">NODE S-103</span></h1>
+        <p class="subtitle">Direct hardware telemetry dashboard</p>
+      </div>
+      <div>
+        <span id="conn-status" class="status-indicator status-disconnected">DISCONNECTED</span>
+      </div>
+    </header>
+
+    <!-- Connection Panel -->
+    <div class="hardware-panel">
+      <div>
+        <label style="display:block; font-size:0.8rem; color:#9ca3af; margin-bottom:4px;">ESP32 Receiver Port</label>
+        <select id="port-select">
+          <option value="">Scanning...</option>
+        </select>
+      </div>
+      <div style="margin-top: 18px;">
+        <button id="connect-btn">CONNECT</button>
+        <button id="disconnect-btn" class="danger" style="display:none;">DISCONNECT</button>
+      </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+      
+      <!-- Score Card -->
+      <div class="card">
+        <span class="card-title">Mine Health Score</span>
+        <span class="card-value value-green" id="main-score">--</span>
+        <p style="font-size: 0.85rem; color: #9ca3af;">Derived from live crack displacement</p>
+      </div>
+
+      <!-- Raw Telemetry Card -->
+      <div class="card" style="grid-column: span 2;">
+        <span class="card-title">Live Sensor Telemetry</span>
+        
+        <div class="telemetry-grid">
+          <div class="telemetry-item">
+            <span class="t-label">MPU6050 Accelerometer (m/s²)</span>
+            <span class="t-val" id="val-accel">Waiting...</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="t-label">MPU6050 Gyroscope (rad/s)</span>
+            <span class="t-val" id="val-gyro">Waiting...</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="t-label">VL53L0X Distance (mm)</span>
+            <span class="t-val" id="val-dist">Waiting...</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="t-label">HX711 Load Cell (g)</span>
+            <span class="t-val" id="val-load">Waiting...</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="t-label">MPU Temperature (°C)</span>
+            <span class="t-val" id="val-temp">Waiting...</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="t-label">SX1278 LoRa RSSI</span>
+            <span class="t-val" id="val-rssi">Waiting...</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
