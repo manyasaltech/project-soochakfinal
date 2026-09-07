@@ -1,10 +1,16 @@
-import serial
-import serial.tools.list_ports
+try:
+    import serial
+    import serial.tools.list_ports
+    HAS_SERIAL = True
+except ImportError:
+    HAS_SERIAL = False
 import threading
 import time
 import re
 
 def get_available_ports():
+    if not HAS_SERIAL:
+        return []
     return [port.device for port in serial.tools.list_ports.comports()]
 
 class HardwareBridge:
@@ -18,6 +24,8 @@ class HardwareBridge:
         self.latest_data = None
     
     def connect(self, port):
+        if not HAS_SERIAL:
+            return False, "pyserial not installed"
         if self.running:
             self.disconnect()
         self.port = port
