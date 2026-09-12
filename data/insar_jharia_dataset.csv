@@ -1,0 +1,11 @@
+node_id,name,lat,lon,zone,displacement_mm,velocity_mmyr,coherence,incidence_angle_deg
+NODE_01,Entry Gate Drift,23.7535,86.4162,Panel 4-B North Barrier,-8.01,0.36,0.912,39.2
+NODE_02,Goaf Margin West A,23.7526,86.4179,Panel 4-B Goaf Margin West,-30.04,-37.63,0.711,39.2
+NODE_03,Longwall Face Center,23.7518,86.4196,Panel 4-B Longwall Center,-46.26,-17.75,0.8,39.2
+NODE_04,Goaf Margin East B,23.7512,86.4214,Panel 4-B Goaf Margin East,-26.76,-41.42,0.874,39.2
+NODE_05,Tailgate Airway Hub,23.7503,86.4232,Panel 4-B Return Airway,-0.68,-9.24,0.813,39.2
+NODE_06,Surface Haul Road Pillar,23.7546,86.4188,Haul Road Overburden,-11.07,-8.04,0.874,39.2
+NODE_07,Village Buffer Zone 1,23.7541,86.4218,Village Buffer Zone,-7.09,-8.21,0.89,39.2
+NODE_08,Railway Line Settlement,23.7529,86.4248,Coal Freight Rail Corridor,-11.77,-8.2,0.846,39.2
+NODE_09,Deep Decompression Shaft,23.7498,86.418,South Subsidence Trough,-34.32,-20.02,0.72,39.2
+NODE_10,East Perimeter Piezometer,23.7515,86.426,East Buffer Barrier,-5.77,-4.3,0.788,39.2

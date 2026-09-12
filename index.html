@@ -3,88 +3,240 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Soochak | Hardware Dashboard</title>
+  <title>Project Soochak | AI Mine Subsidence Early Warning System</title>
   <link rel="stylesheet" href="css/styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- AeroLinkTree Overlays -->
+  <!-- AeroLinkTree Ambient Grain & Lighting -->
   <div class="grain"></div>
   <div class="texture-bg"></div>
 
   <div class="app-container">
-    <!-- Header -->
+    <!-- TOP HEADER -->
     <header class="app-header">
-      <div>
+      <div class="header-left">
         <div class="brand-badge">
           <span class="pulse-dot"></span>
-          <span>SIH 2026 • REALTIME ESP32</span>
+          <span>SIH 2026 • PS 26025 • TEAM MATR</span>
         </div>
-        <h1>PROJECT SOOCHAK <span class="sub-tag">NODE S-103</span></h1>
-        <p class="subtitle">Direct hardware telemetry dashboard</p>
+        <div class="title-group">
+          <h1>PROJECT SOOCHAK <span class="sub-tag">MINE RESPONSE</span></h1>
+          <p class="subtitle">AI-Enabled Low-Cost Mine Subsidence Monitoring & Early Warning · Jharia Coalfield Panel 4-B</p>
+        </div>
       </div>
-      <div>
-        <span id="conn-status" class="status-indicator status-disconnected">DISCONNECTED</span>
+
+      <!-- Live Scenario Switcher for Judges -->
+      <div class="scenario-panel">
+        <div class="scenario-label">LIVE SCENARIO DEMO:</div>
+        <div class="scenario-buttons">
+          <button class="scenario-btn active" data-scenario="normal" title="Normal steady mining shift with ambient micro-vibrations">
+            <span class="pulse-dot emerald"></span> Normal
+          </button>
+          <button class="scenario-btn" data-scenario="blasting" title="Heavy blasting shockwave: Tests False Alarm Rejection">
+            <span class="pulse-dot amber"></span> Blasting (Guard)
+          </button>
+          <button class="scenario-btn" data-scenario="strata_creep" title="Strata bed separation micro-deformation">
+            <span class="pulse-dot amber"></span> Strata Creep
+          </button>
+          <button class="scenario-btn danger" data-scenario="critical_subsidence" title="Coordinated ground failure: Full Evacuation Trigger">
+            <span class="pulse-dot coral"></span> Critical Subsidence
+          </button>
+          <button class="scenario-btn" data-scenario="sensor_glitch" title="Single sensor drift: Isolated Suppression Test">
+            <span class="pulse-dot"></span> Glitch Rejection
+          </button>
+        </div>
+      </div>
+
+      <!-- Threat Level & Controls -->
+      <div class="header-right">
+        <div class="threat-indicator">
+          <div class="threat-label">SYSTEM THREAT LEVEL</div>
+          <div class="threat-status safe" id="threatStatusBadge">SAFE / NOMINAL</div>
+        </div>
+
+        <div class="quick-controls">
+          <button class="icon-btn" id="audioToggleBtn" title="Toggle Emergency Siren Audio">
+            <span id="audioIcon">🔇</span> Audio
+          </button>
+          <button class="btn btn-outline" id="exportReportBtn" title="View DGMS Safety Audit Report">
+            📄 Audit Report
+          </button>
+        </div>
       </div>
     </header>
 
-    <!-- Connection Panel -->
-    <div class="hardware-panel">
-      <div>
-        <label style="display:block; font-size:0.8rem; color:#9ca3af; margin-bottom:4px;">ESP32 Receiver Port</label>
-        <select id="port-select">
-          <option value="">Scanning...</option>
+    <!-- HARDWARE CONNECTION STRIP -->
+    <div class="app-header" style="padding: 10px 18px; justify-content: space-between; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--accent-cyan); font-weight: 700;">
+          🔌 ESP32 RECEIVER BRIDGE:
+        </span>
+        <select id="portSelect" style="background: rgba(17,24,39,0.8); color: #f3f4f6; border: 1px solid var(--glass-border); padding: 4px 10px; border-radius: 6px; font-size: 0.78rem;">
+          <option value="">Scanning ports...</option>
         </select>
+        <button class="btn btn-primary" id="connectPortBtn" style="padding: 4px 12px; font-size: 0.76rem;">Connect</button>
+        <button class="btn" id="disconnectPortBtn" style="padding: 4px 12px; font-size: 0.76rem; display: none;">Disconnect</button>
       </div>
-      <div style="margin-top: 18px;">
-        <button id="connect-btn">CONNECT</button>
-        <button id="disconnect-btn" class="danger" style="display:none;">DISCONNECT</button>
+
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="hwStatusBadge" class="threat-status safe" style="font-size: 0.72rem; padding: 2px 10px;">
+          SYNTHETIC SIMULATION ACTIVE
+        </span>
+        <button class="btn btn-outline" id="stepSimBtn" style="padding: 4px 10px; font-size: 0.76rem;">⚡ Step</button>
+        <button class="btn btn-outline" id="resetSimBtn" style="padding: 4px 10px; font-size: 0.76rem;">🔄 Reset</button>
+        <label style="font-size: 0.76rem; display: flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer;">
+          <input type="checkbox" id="autoPlayChk" checked> Auto-Run (2s)
+        </label>
       </div>
     </div>
 
-    <!-- Dashboard Grid -->
-    <div class="dashboard-grid">
-      
-      <!-- Score Card -->
-      <div class="card">
-        <span class="card-title">Mine Health Score</span>
-        <span class="card-value value-green" id="main-score">--</span>
-        <p style="font-size: 0.85rem; color: #9ca3af;">Derived from live crack displacement</p>
+    <!-- METRICS RIBBON -->
+    <section class="metrics-ribbon">
+      <div class="metric-card">
+        <span class="metric-title">ESP32 MESH FLEET</span>
+        <div class="metric-val" id="metricMeshNodes">8 / 8 Online</div>
+        <span class="metric-sub text-success">LoRa 433MHz / ESP-NOW</span>
       </div>
 
-      <!-- Raw Telemetry Card -->
-      <div class="card" style="grid-column: span 2;">
-        <span class="card-title">Live Sensor Telemetry</span>
-        
-        <div class="telemetry-grid">
-          <div class="telemetry-item">
-            <span class="t-label">MPU6050 Accelerometer (m/s²)</span>
-            <span class="t-val" id="val-accel">Waiting...</span>
+      <div class="metric-card">
+        <span class="metric-title">OPTICAL LASER REFERENCE</span>
+        <div class="metric-val" id="metricLaserDev">0.07 mm</div>
+        <span class="metric-sub" id="metricLaserSub">980m Baseline · Aligned</span>
+      </div>
+
+      <div class="metric-card">
+        <span class="metric-title">ISOLATION FOREST SCORE</span>
+        <div class="metric-val" id="metricAnomalyScore">0.032</div>
+        <span class="metric-sub" id="metricAnomalySub">8-Feature Feature Vector</span>
+      </div>
+
+      <div class="metric-card">
+        <span class="metric-title">FALSE ALARMS REJECTED</span>
+        <div class="metric-val text-success" id="metricFalseAlarms">0 Blocked</div>
+        <span class="metric-sub">Multi-Node Spatial Guard</span>
+      </div>
+
+      <div class="metric-card">
+        <span class="metric-title">MAX DISPLACEMENT</span>
+        <div class="metric-val" id="metricMaxDisp">0.32 mm</div>
+        <span class="metric-sub text-success">Permissible &lt; 2.0 mm</span>
+      </div>
+    </section>
+
+    <!-- DASHBOARD MAIN GRID -->
+    <main class="dashboard-grid">
+      <!-- LEFT PANEL: SENSOR MATRIX & TREND CHARTS -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>🧭</span> INTERACTIVE SENSOR HEALTH MATRIX (PHI-CUBE)
           </div>
-          <div class="telemetry-item">
-            <span class="t-label">MPU6050 Gyroscope (rad/s)</span>
-            <span class="t-val" id="val-gyro">Waiting...</span>
-          </div>
-          <div class="telemetry-item">
-            <span class="t-label">VL53L0X Distance (mm)</span>
-            <span class="t-val" id="val-dist">Waiting...</span>
-          </div>
-          <div class="telemetry-item">
-            <span class="t-label">HX711 Load Cell (g)</span>
-            <span class="t-val" id="val-load">Waiting...</span>
-          </div>
-          <div class="telemetry-item">
-            <span class="t-label">MPU Temperature (°C)</span>
-            <span class="t-val" id="val-temp">Waiting...</span>
-          </div>
-          <div class="telemetry-item">
-            <span class="t-label">SX1278 LoRa RSSI</span>
-            <span class="t-val" id="val-rssi">Waiting...</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">
+            Panel 4-B · Jharia Seam 11
+          </span>
+        </div>
+
+        <!-- Sensor Grid -->
+        <div class="phi-grid-container">
+          <div class="phi-grid" id="phiGridContainer">
+            <!-- Rendered by JS -->
           </div>
         </div>
-      </div>
 
+        <!-- Telemetry Canvas Chart -->
+        <div class="panel-header" style="margin-top: 6px;">
+          <div class="panel-title">
+            <span>📈</span> REAL-TIME ANOMALY & DISPLACEMENT TREND
+          </div>
+          <span style="font-size: 0.72rem; color: var(--text-dim);" id="stepCounterLabel">Step: 1</span>
+        </div>
+        <canvas id="trendChartCanvas" height="150" style="width: 100%; border-radius: 8px; background: rgba(11, 17, 32, 0.7);"></canvas>
+      </section>
+
+      <!-- RIGHT PANEL: NODE INSPECTOR & LASER RETICLE & AUDIT -->
+      <aside class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>🔍</span> NODE INSPECTOR TELEMETRY
+          </div>
+          <span id="inspectorNodeTag" class="threat-status safe" style="font-size: 0.7rem; padding: 2px 8px;">
+            Node S-103
+          </span>
+        </div>
+
+        <!-- Inspector Card -->
+        <div class="detail-card" id="inspectorCardBody" style="background: rgba(11, 17, 32, 0.6); border-radius: 10px; padding: 12px 14px;">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Long Baseline Laser Reticle Box -->
+        <div class="panel-header" style="margin-top: 4px;">
+          <div class="panel-title">
+            <span>🎯</span> 980M OPTICAL LASER ALIGNMENT RETICLE
+          </div>
+          <span id="laserStatusTag" class="threat-status safe" style="font-size: 0.68rem; padding: 2px 8px;">
+            ALIGNED
+          </span>
+        </div>
+
+        <div class="laser-scope-box">
+          <canvas id="laserScopeCanvas" class="laser-scope-canvas" width="120" height="120"></canvas>
+          <div class="laser-info">
+            <div class="laser-row"><span class="lbl">Spot X:</span> <span class="val" id="laserValX">+0.04 mm</span></div>
+            <div class="laser-row"><span class="lbl">Spot Y:</span> <span class="val" id="laserValY">-0.06 mm</span></div>
+            <div class="laser-row"><span class="lbl">Deviation:</span> <span class="val text-success" id="laserValDev">0.07 mm</span></div>
+            <div class="laser-row"><span class="lbl">Intensity:</span> <span class="val" id="laserValInt">97.2 %</span></div>
+            <div class="laser-row"><span class="lbl">Path SNR:</span> <span class="val" id="laserValSnr">38.5 dB</span></div>
+          </div>
+        </div>
+
+        <!-- False Alarm Audit Feed -->
+        <div class="panel-header" style="margin-top: 4px;">
+          <div class="panel-title">
+            <span>🛡️</span> AI CORRELATION & AUDIT FEED
+          </div>
+        </div>
+        <div class="log-stream" id="logStreamContainer">
+          <!-- Filled by JS -->
+        </div>
+      </aside>
+    </main>
+
+    <!-- DGMS AUDIT REPORT MODAL -->
+    <div class="modal-backdrop hidden" id="reportModalBackdrop">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div>
+            <h2 style="font-size: 1.2rem; font-family: 'Chakra Petch', sans-serif; color: var(--accent-cyan);">
+              DGMS MINE SUBSIDENCE SAFETY AUDIT REPORT
+            </h2>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+              Directorate General of Mines Safety Circular Compliance · Jharia Coalfield Panel 4-B
+            </p>
+          </div>
+          <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+        </div>
+
+        <div id="modalReportContent" style="font-size: 0.82rem; line-height: 1.5; color: #cbd5e1; max-height: 380px; overflow-y: auto;">
+          <!-- Generated by JS -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; border-top: 1px solid var(--glass-border); padding-top: 12px;">
+          <button class="btn btn-outline" id="downloadCsvBtn">Download CSV Telemetry</button>
+          <button class="btn btn-primary" id="printReportBtn">Print / Save PDF</button>
+        </div>
+      </div>
     </div>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+      <div>Team MATR · Project Soochak · Problem Statement 26025</div>
+      <div>Telemetry Mesh: ESP32 + MPU6050 + VL53L1X + HX711 + LoRa SX1278</div>
+      <div>Gateway: 192.168.4.1 / USB Serial</div>
+    </footer>
   </div>
 
   <script src="js/app.js"></script>

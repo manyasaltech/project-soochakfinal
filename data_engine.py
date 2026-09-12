@@ -24,6 +24,9 @@ from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
 from hardware import bridge
+from models.seismic_isolation_forest import get_seismic_detector
+from models.stgcn_lstm import get_stgcn_forecaster
+from data.insar_india_dataset import load_insar_spatial_data
 
 
 class OperationalScenario(str, Enum):
@@ -297,6 +300,10 @@ class MineEnvironmentSimulator:
         self.history_records: List[Dict] = []
         self.alert_logs: List[Dict] = []
         self.false_alarms_rejected = 0
+
+        self.seismic_detector = get_seismic_detector()
+        self.stgcn_forecaster = get_stgcn_forecaster()
+        self.insar_df = load_insar_spatial_data()
 
     def _init_nodes(self):
         for cfg in self.initial_nodes_config:
@@ -573,6 +580,29 @@ class MineEnvironmentSimulator:
         if len(self.history_records) > 60:
             self.history_records.pop(0)
 
+        # Layer 1: UCI Seismic-Bumps Real Model Prediction
+        seismic_features = []
+        for n in self.nodes.values():
+            ge = int(abs(n.vibration_rms_g) * 140000 + abs(n.load_delta_kN) * 900)
+            gp = int(n.vibration_peak_g * 1500)
+            me = int(max(0, n.vibration_peak_g - 0.15) * 65000)
+            seismic_features.append({
+                "genergy": ge, "gpuls": gp, "gdenergy": int(n.load_delta_kN),
+                "gdpuls": int(n.vibration_rms_g * 100),
+                "nbumps": int(me > 1000 and me < 10000),
+                "nbumps2": int(me >= 10000 and me < 50000),
+                "nbumps3": int(me >= 50000),
+                "nbumps4": 0, "nbumps5": 0,
+                "energy": me, "maxenergy": me
+            })
+        df_seis = pd.DataFrame(seismic_features)
+        seis_scores = self.seismic_detector.predict_anomaly_scores(df_seis)
+
+        # Layer 2: STGCN-LSTM InSAR Satellite Subsidence Forecast
+        forecast_12h = self.stgcn_forecaster.predict_forecast_12h()
+        peak_12h_risk = forecast_12h.max(axis=1)
+        highest_risk_idx = int(np.argmax(peak_12h_risk))
+
         return {
             "nodes": [n.to_dict() for n in self.nodes.values()],
             "laser_system": asdict(self.laser_system),
@@ -583,6 +613,16 @@ class MineEnvironmentSimulator:
             "rejection_event": rejection_event,
             "history": self.history_records,
             "logs": self.alert_logs,
+            "uci_seismic": {
+                "scores": {nid: float(s) for nid, s in zip(self.nodes.keys(), seis_scores)},
+                "features": seismic_features,
+            },
+            "insar_forecast": {
+                "nodes": self.insar_df.to_dict(orient="records"),
+                "forecast_12h": forecast_12h.tolist(),
+                "peak_12h_risk": peak_12h_risk.tolist(),
+                "highest_risk_idx": highest_risk_idx,
+            },
         }
 
     def _apply_correlation_rules(
