@@ -1019,63 +1019,42 @@ with tab_operations:
         g2_title, g2_val, g2_sub = "2. CRITICAL SECTOR", "🟢 ALL NOMINAL", "8 Mesh Nodes Active"
         g3_title, g3_val, g3_sub = "3. OPERATOR ACTION", "✅ SHIFT AUTHORIZED", "Regular Mining Operations"
 
-    st.markdown(f"""
-    <div class="presenter-shell">
-        <div class="presenter-header">
-            <div class="presenter-brand-name">
-                <span class="pulse-circle" style="background:{stage_status_color};"></span>
-                <span>PROJECT SOOCHAK MINE COMMAND // EARLY WARNING STAGE SYNCED</span>
-            </div>
-            <div class="presenter-sub-tag" style="color: {stage_status_color};">
-                ● {stage_status}
-            </div>
-        </div>
-        
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 18px;">
-            <div style="flex: 1; min-width: 320px;">
-                <div class="presenter-topic-label" style="color: {stage_status_color};">
-                    ● {stage_status}
-                </div>
-                <h2 class="presenter-topic-title">
-                    {stage_title}
-                </h2>
-                <p class="presenter-topic-desc">
-                    {stage_desc}
-                </p>
-            </div>
-            
-            <div style="text-align: right; min-width: 270px;">
-                <div class="presenter-timer-label">
-                    {timer_label}
-                </div>
-                <div class="presenter-timer-digits {stage_pulse_cls}">
-                    {timer_str}
-                </div>
-                <div class="timer-progress-track">
-                    <div class="timer-progress-fill {stage_pulse_cls}" style="width: {progress_pct}%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="summary-grid">
-            <div class="summary-pill-card">
-                <div class="summary-tag">🌐 {g1_title}</div>
-                <div class="summary-value">{g1_val}</div>
-                <div class="summary-sub">{g1_sub}</div>
-            </div>
-            <div class="summary-pill-card">
-                <div class="summary-tag">📍 {g2_title}</div>
-                <div class="summary-value">{g2_val}</div>
-                <div class="summary-sub">{g2_sub}</div>
-            </div>
-            <div class="summary-pill-card">
-                <div class="summary-tag">⚡ {g3_title}</div>
-                <div class="summary-value">{g3_val}</div>
-                <div class="summary-sub">{g3_sub}</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    stage_html = f"""<div class="presenter-shell">
+<div class="presenter-header">
+<div class="presenter-brand-name"><span class="pulse-circle" style="background:{stage_status_color};"></span><span>PROJECT SOOCHAK MINE COMMAND // EARLY WARNING STAGE SYNCED</span></div>
+<div class="presenter-sub-tag" style="color: {stage_status_color};">● {stage_status}</div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 18px;">
+<div style="flex: 1; min-width: 320px;">
+<div class="presenter-topic-label" style="color: {stage_status_color};">● {stage_status}</div>
+<h2 class="presenter-topic-title">{stage_title}</h2>
+<p class="presenter-topic-desc">{stage_desc}</p>
+</div>
+<div style="text-align: right; min-width: 270px;">
+<div class="presenter-timer-label">{timer_label}</div>
+<div class="presenter-timer-digits {stage_pulse_cls}">{timer_str}</div>
+<div class="timer-progress-track"><div class="timer-progress-fill {stage_pulse_cls}" style="width: {progress_pct}%;"></div></div>
+</div>
+</div>
+<div class="summary-grid">
+<div class="summary-pill-card">
+<div class="summary-tag">🌐 {g1_title}</div>
+<div class="summary-value">{g1_val}</div>
+<div class="summary-sub">{g1_sub}</div>
+</div>
+<div class="summary-pill-card">
+<div class="summary-tag">📍 {g2_title}</div>
+<div class="summary-value">{g2_val}</div>
+<div class="summary-sub">{g2_sub}</div>
+</div>
+<div class="summary-pill-card">
+<div class="summary-tag">⚡ {g3_title}</div>
+<div class="summary-value">{g3_val}</div>
+<div class="summary-sub">{g3_sub}</div>
+</div>
+</div>
+</div>"""
+    st.markdown(stage_html, unsafe_allow_html=True)
 
     # Top 5 KPI ribbon
     kpi_c1, kpi_c2, kpi_c3, kpi_c4, kpi_c5 = st.columns(5)
@@ -1117,43 +1096,29 @@ with tab_operations:
     if is_hazard_active:
         mbe_cls = "banner-critical" if top_hazard["anomaly_score"] >= 0.70 else "banner-warning"
         mbe_icon = "🚨" if top_hazard["anomaly_score"] >= 0.70 else "⚠️"
-        st.markdown(f"""
-        <div class="status-banner {mbe_cls}" style="margin-bottom: 14px; padding: 10px 16px;">
-            <div style="font-size: 1.6rem; line-height: 1;">{mbe_icon}</div>
-            <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                    <div style="font-weight: 800; font-size: 0.95rem; letter-spacing: 0.4px;">
-                        MANAGEMENT BY EXCEPTION · HOTSPOT ISOLATED: {top_hazard_id} ({top_hazard['name']})
-                    </div>
-                    <span class="kpi-pill pill-crit" style="font-size: 0.68rem;">
-                        <span class="pulse-circle"></span>ADAPTIVE SAMPLING: 2.0s POLLING ACTIVE
-                    </span>
-                </div>
-                <div style="font-size: 0.80rem; color: #cbd5e1; margin-top: 3px;">
-                    Automated fleet filter isolated <b>{top_hazard_id}</b> in <b>{top_hazard['panel_zone']}</b> (Score <b>{top_hazard['anomaly_score']:.3f}</b> · Disp <b>{top_hazard['displacement_mm']:.2f}mm</b>). Telemetry auto-adjusted to 2.0s high-rate focus while remaining fleet operates in 30s power-save mode.
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        mbe_html = f"""<div class="status-banner {mbe_cls}" style="margin-bottom: 14px; padding: 10px 16px;">
+<div style="font-size: 1.6rem; line-height: 1;">{mbe_icon}</div>
+<div style="flex: 1;">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+<div style="font-weight: 800; font-size: 0.95rem; letter-spacing: 0.4px;">MANAGEMENT BY EXCEPTION · HOTSPOT ISOLATED: {top_hazard_id} ({top_hazard['name']})</div>
+<span class="kpi-pill pill-crit" style="font-size: 0.68rem;"><span class="pulse-circle"></span>ADAPTIVE SAMPLING: 2.0s POLLING ACTIVE</span>
+</div>
+<div style="font-size: 0.80rem; color: #cbd5e1; margin-top: 3px;">Automated fleet filter isolated <b>{top_hazard_id}</b> in <b>{top_hazard['panel_zone']}</b> (Score <b>{top_hazard['anomaly_score']:.3f}</b> · Disp <b>{top_hazard['displacement_mm']:.2f}mm</b>). Telemetry auto-adjusted to 2.0s high-rate focus while remaining fleet operates in 30s power-save mode.</div>
+</div>
+</div>"""
+        st.markdown(mbe_html, unsafe_allow_html=True)
     else:
-        st.markdown("""
-        <div class="status-banner banner-safe" style="margin-bottom: 14px; padding: 10px 16px;">
-            <div style="font-size: 1.6rem; line-height: 1;">🛡️</div>
-            <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                    <div style="font-weight: 800; font-size: 0.95rem; letter-spacing: 0.4px;">
-                        MANAGEMENT BY EXCEPTION · ALL FLEET SECTORS NOMINAL
-                    </div>
-                    <span class="kpi-pill pill-safe" style="font-size: 0.68rem;">
-                        <span class="pulse-circle"></span>POWER-SAVE TELEMETRY: 30.0s POLLING
-                    </span>
-                </div>
-                <div style="font-size: 0.80rem; color: #cbd5e1; margin-top: 3px;">
-                    Automated anomaly filter confirms all sensor nodes are within geological baseline limits. Standard low-power 30-second telemetry active across fleet.
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        mbe_html = """<div class="status-banner banner-safe" style="margin-bottom: 14px; padding: 10px 16px;">
+<div style="font-size: 1.6rem; line-height: 1;">🛡️</div>
+<div style="flex: 1;">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+<div style="font-weight: 800; font-size: 0.95rem; letter-spacing: 0.4px;">MANAGEMENT BY EXCEPTION · ALL FLEET SECTORS NOMINAL</div>
+<span class="kpi-pill pill-safe" style="font-size: 0.68rem;"><span class="pulse-circle"></span>POWER-SAVE TELEMETRY: 30.0s POLLING</span>
+</div>
+<div style="font-size: 0.80rem; color: #cbd5e1; margin-top: 3px;">Automated anomaly filter confirms all sensor nodes are within geological baseline limits. Standard low-power 30-second telemetry active across fleet.</div>
+</div>
+</div>"""
+        st.markdown(mbe_html, unsafe_allow_html=True)
 
     grid_col, detail_col = st.columns([1.8, 1.2])
 
